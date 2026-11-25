@@ -68,8 +68,8 @@ export function Modal({
       initial={shouldReduce ? false : { opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={shouldReduce ? undefined : { opacity: 0 }}
-      transition={{ duration: 0.2 }}
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/75 p-4 backdrop-blur-sm"
+      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-ink/35 p-4 backdrop-blur-sm"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -80,21 +80,21 @@ export function Modal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        initial={shouldReduce ? false : { opacity: 0, scale: 0.96, y: 12 }}
+        initial={shouldReduce ? false : { opacity: 0, scale: 0.96, y: 14 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={shouldReduce ? undefined : { opacity: 0, scale: 0.96, y: 12 }}
-        transition={{ type: 'spring', damping: 26, stiffness: 320 }}
-        className={`relative my-8 w-full ${maxWidthClass} rounded-2xl border border-stone-border bg-headstone p-6 shadow-tombstone`}
+        exit={shouldReduce ? undefined : { opacity: 0, scale: 0.97, y: 10 }}
+        transition={{ type: 'spring', damping: 28, stiffness: 300, mass: 0.85 }}
+        className={`relative my-8 w-full ${maxWidthClass} rounded-3xl border border-hairline bg-canvas p-6 shadow-2xl`}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-stone-border/70 pb-4">
-          <h2 id={titleId} className="font-display text-xl font-bold text-bone">
+        <div className="flex items-start justify-between gap-4 border-b border-hairline pb-4">
+          <h2 id={titleId} className="font-display text-xl font-semibold text-ink">
             {title}
           </h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close modal"
-            className="rounded-lg border border-stone-border bg-crypt p-1.5 text-stone transition-colors hover:border-necro/60 hover:text-bone"
+            className="rounded-xl border border-hairline bg-alabaster p-1.5 text-slate-muted transition-colors hover:border-azure/50 hover:text-ink"
           >
             <CloseIcon className="h-4 w-4" aria-hidden="true" />
           </button>

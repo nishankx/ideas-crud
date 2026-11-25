@@ -26,7 +26,7 @@ function GraveyardShell() {
   const { data: summary } = useFetch<InsightsSummary>(summaryPath);
 
   return (
-    <div className="min-h-screen bg-crypt text-bone crypt-grain">
+    <div className="min-h-screen bg-canvas text-ink">
       <Navbar />
       <main>
         <HeroSection summary={summary} />

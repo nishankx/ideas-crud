@@ -64,21 +64,21 @@ export function AuthModal({ mode }: AuthModalProps) {
 
   return (
     <Modal
-      title={mode === 'login' ? 'Enter Your Crypt' : 'Claim Your Graveyard Plot'}
+      title={mode === 'login' ? 'Sign In to Your Graveyard' : 'Claim Your Graveyard Plot'}
       titleId="auth-modal-title"
       onClose={close}
       maxWidthClass="max-w-md"
     >
       <form onSubmit={(e) => void onSubmit(e)} noValidate className="space-y-4">
         {serverError && (
-          <div role="alert" className="rounded-lg border border-rust/50 bg-rust/10 px-3 py-2 text-xs text-rust">
+          <div role="alert" className="rounded-xl border border-marble-rust/30 bg-marble-rust/5 px-3 py-2 text-xs text-marble-rust">
             {serverError}
           </div>
         )}
 
         {mode === 'register' && (
           <div>
-            <label htmlFor="auth-name" className="block text-xs font-medium text-bone">
+            <label htmlFor="auth-name" className="block text-xs font-medium text-ink">
               Display Name
             </label>
             <input
@@ -88,16 +88,16 @@ export function AuthModal({ mode }: AuthModalProps) {
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Serial Pivoter"
-              className="mt-1.5 w-full rounded-lg border border-stone-border bg-crypt px-3 py-2 text-sm text-bone placeholder:text-stone/50 focus:border-necro focus:outline-none"
+              className="mt-1.5 w-full rounded-xl border border-hairline bg-alabaster px-3 py-2 text-sm text-ink placeholder:text-slate-muted/60 focus:border-azure focus:bg-canvas focus:outline-none"
             />
             {fieldErrors.displayName && (
-              <p className="mt-1 text-xs text-rust">{fieldErrors.displayName}</p>
+              <p className="mt-1 text-xs text-marble-rust">{fieldErrors.displayName}</p>
             )}
           </div>
         )}
 
         <div>
-          <label htmlFor="auth-email" className="block text-xs font-medium text-bone">
+          <label htmlFor="auth-email" className="block text-xs font-medium text-ink">
             Email
           </label>
           <input
@@ -107,15 +107,15 @@ export function AuthModal({ mode }: AuthModalProps) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="founder@example.com"
-            className="mt-1.5 w-full rounded-lg border border-stone-border bg-crypt px-3 py-2 text-sm text-bone placeholder:text-stone/50 focus:border-necro focus:outline-none"
+            className="mt-1.5 w-full rounded-xl border border-hairline bg-alabaster px-3 py-2 text-sm text-ink placeholder:text-slate-muted/60 focus:border-azure focus:bg-canvas focus:outline-none"
           />
           {fieldErrors.email && (
-            <p className="mt-1 text-xs text-rust">{fieldErrors.email}</p>
+            <p className="mt-1 text-xs text-marble-rust">{fieldErrors.email}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="auth-password" className="block text-xs font-medium text-bone">
+          <label htmlFor="auth-password" className="block text-xs font-medium text-ink">
             Password
           </label>
           <input
@@ -125,17 +125,17 @@ export function AuthModal({ mode }: AuthModalProps) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
-            className="mt-1.5 w-full rounded-lg border border-stone-border bg-crypt px-3 py-2 text-sm text-bone placeholder:text-stone/50 focus:border-necro focus:outline-none"
+            className="mt-1.5 w-full rounded-xl border border-hairline bg-alabaster px-3 py-2 text-sm text-ink placeholder:text-slate-muted/60 focus:border-azure focus:bg-canvas focus:outline-none"
           />
           {fieldErrors.password && (
-            <p className="mt-1 text-xs text-rust">{fieldErrors.password}</p>
+            <p className="mt-1 text-xs text-marble-rust">{fieldErrors.password}</p>
           )}
         </div>
 
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-xl bg-necro py-2.5 text-sm font-semibold text-crypt transition-opacity hover:opacity-95 disabled:opacity-50"
+          className="w-full rounded-xl bg-azure py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-azure-deep disabled:opacity-50"
         >
           {submitting
             ? 'Opening gates...'
@@ -144,18 +144,18 @@ export function AuthModal({ mode }: AuthModalProps) {
               : 'Create Account'}
         </button>
 
-        <p className="text-center text-xs text-stone">
+        <p className="text-center text-xs text-slate-muted">
           {mode === 'login' ? (
             <>
               New here?{' '}
-              <Link to="/register" className="text-necro hover:underline">
+              <Link to="/register" className="font-medium text-azure hover:underline">
                 Claim a plot
               </Link>
             </>
           ) : (
             <>
-              Already have a crypt?{' '}
-              <Link to="/login" className="text-necro hover:underline">
+              Already have a plot?{' '}
+              <Link to="/login" className="font-medium text-azure hover:underline">
                 Sign in
               </Link>
             </>

@@ -5,63 +5,51 @@
 @layer base {
   html {
     font-family: theme('fontFamily.sans');
-    background-color: theme('colors.crypt');
-    color: theme('colors.bone');
+    background-color: theme('colors.canvas');
+    color: theme('colors.ink');
   }
 
   *:focus-visible {
-    outline: 2px solid theme('colors.necro');
+    outline: 2px solid theme('colors.azure');
     outline-offset: 2px;
   }
 }
 
-/* Subtle film grain / crypt stone texture */
-.crypt-grain {
-  background-image: radial-gradient(rgba(234, 230, 223, 0.04) 1px, transparent 0);
-  background-size: 24px 24px;
-}
-
-/* Drifting fog animation */
-@keyframes fogDrift {
-  0% {
-    transform: translateX(-8%) translateY(0);
+/* Smooth cloud & marquee animations */
+@keyframes cloudFloat {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
   }
   50% {
-    transform: translateX(8%) translateY(-6px);
+    transform: translate3d(18px, -8px, 0);
+  }
+}
+
+@keyframes marqueeScroll {
+  0% {
+    transform: translate3d(0, 0, 0);
   }
   100% {
-    transform: translateX(-8%) translateY(0);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
-@keyframes moonFlicker {
-  0%, 100% {
-    opacity: 0.9;
-    filter: drop-shadow(0 0 22px rgba(124, 235, 79, 0.22));
-  }
-  48% {
-    opacity: 0.85;
-  }
-  50% {
-    opacity: 0.65;
-    filter: drop-shadow(0 0 10px rgba(124, 235, 79, 0.1));
-  }
-  52% {
-    opacity: 0.92;
-  }
+.animate-cloud-float {
+  animation: cloudFloat 16s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
-.animate-fog-slow {
-  animation: fogDrift 26s ease-in-out infinite;
+.animate-cloud-float-slow {
+  animation: cloudFloat 24s cubic-bezier(0.45, 0, 0.55, 1) infinite reverse;
 }
 
-.animate-moon-flicker {
-  animation: moonFlicker 9s ease-in-out infinite;
+.animate-marquee {
+  animation: marqueeScroll 32s linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-fog-slow,
-  .animate-moon-flicker {
+  .animate-cloud-float,
+  .animate-cloud-float-slow,
+  .animate-marquee {
     animation: none !important;
   }
 }

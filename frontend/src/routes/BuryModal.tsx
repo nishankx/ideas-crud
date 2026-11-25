@@ -43,21 +43,21 @@ export function BuryModal({ onBuried }: BuryModalProps) {
   if (!isAuthenticated) {
     return (
       <Modal title="Sign In to Bury an Idea" titleId="bury-auth-title" onClose={close}>
-        <p className="text-sm text-stone">
+        <p className="text-sm text-slate-muted">
           You are currently browsing the public demo graveyard. Create a free account to bury and analyze your own abandoned ideas.
         </p>
         <div className="mt-5 flex justify-end gap-3">
           <button
             type="button"
             onClick={close}
-            className="rounded-lg border border-stone-border px-4 py-2 text-xs text-stone hover:text-bone"
+            className="rounded-xl border border-hairline px-4 py-2 text-xs font-medium text-slate-muted hover:text-ink"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={() => navigate('/register')}
-            className="rounded-lg bg-necro px-4 py-2 text-xs font-semibold text-crypt"
+            className="rounded-xl bg-azure px-4 py-2 text-xs font-semibold text-white"
           >
             Create Account
           </button>
@@ -131,6 +131,9 @@ export function BuryModal({ onBuried }: BuryModalProps) {
     }
   };
 
+  const inputClass =
+    'mt-1 w-full rounded-xl border border-hairline bg-alabaster px-3 py-2 text-sm text-ink focus:border-azure focus:bg-canvas focus:outline-none';
+
   return (
     <Modal title="Bury an Idea" titleId="bury-modal-title" onClose={close} maxWidthClass="max-w-2xl">
       {buryingAnim ? (
@@ -138,27 +141,27 @@ export function BuryModal({ onBuried }: BuryModalProps) {
           <motion.div
             initial={shouldReduce ? false : { rotate: -25, y: -12 }}
             animate={{ rotate: [0, -35, 10, 0], y: [0, 8, 0] }}
-            transition={{ duration: 0.6 }}
-            className="rounded-full border border-necro/40 bg-necro/10 p-5 text-necro"
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="rounded-full border border-azure/30 bg-cloud-wash p-5 text-azure"
           >
             <ShovelIcon className="h-10 w-10" aria-hidden="true" />
           </motion.div>
-          <p className="mt-4 font-display text-lg font-semibold text-bone">
-            Lowering {name} into the dirt...
+          <p className="mt-4 font-display text-lg font-semibold text-ink">
+            Engraving {name}...
           </p>
-          <p className="mt-1 text-xs text-stone">May its lessons live on.</p>
+          <p className="mt-1 text-xs text-slate-muted">May its lessons live on.</p>
         </div>
       ) : (
         <form onSubmit={(e) => void onSubmit(e)} noValidate className="space-y-4">
           {serverError && (
-            <div role="alert" className="rounded-lg border border-rust/50 bg-rust/10 px-3 py-2 text-xs text-rust">
+            <div role="alert" className="rounded-xl border border-marble-rust/30 bg-marble-rust/5 px-3 py-2 text-xs text-marble-rust">
               {serverError}
             </div>
           )}
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="bury-name" className="block text-xs font-medium text-bone">
+              <label htmlFor="bury-name" className="block text-xs font-medium text-ink">
                 Startup Name *
               </label>
               <input
@@ -167,20 +170,20 @@ export function BuryModal({ onBuried }: BuryModalProps) {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="BarkCRM"
-                className="mt-1 w-full rounded-lg border border-stone-border bg-crypt px-3 py-2 text-sm text-bone focus:border-necro focus:outline-none"
+                className={inputClass}
               />
-              {errors.name && <p className="mt-1 text-xs text-rust">{errors.name}</p>}
+              {errors.name && <p className="mt-1 text-xs text-marble-rust">{errors.name}</p>}
             </div>
 
             <div>
-              <label htmlFor="bury-category" className="block text-xs font-medium text-bone">
+              <label htmlFor="bury-category" className="block text-xs font-medium text-ink">
                 Category *
               </label>
               <select
                 id="bury-category"
                 value={category}
                 onChange={(e) => setCategory(e.target.value as IdeaCategory)}
-                className="mt-1 w-full rounded-lg border border-stone-border bg-crypt px-3 py-2 text-sm text-bone focus:border-necro focus:outline-none"
+                className={inputClass}
               >
                 {Object.entries(CATEGORY_LABELS).map(([k, label]) => (
                   <option key={k} value={k}>
@@ -192,7 +195,7 @@ export function BuryModal({ onBuried }: BuryModalProps) {
           </div>
 
           <div>
-            <label htmlFor="bury-tagline" className="block text-xs font-medium text-bone">
+            <label htmlFor="bury-tagline" className="block text-xs font-medium text-ink">
               One-line Pitch
             </label>
             <input
@@ -201,13 +204,13 @@ export function BuryModal({ onBuried }: BuryModalProps) {
               value={tagline}
               onChange={(e) => setTagline(e.target.value)}
               placeholder="Salesforce for neighborhood dog walkers"
-              className="mt-1 w-full rounded-lg border border-stone-border bg-crypt px-3 py-2 text-sm text-bone focus:border-necro focus:outline-none"
+              className={inputClass}
             />
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="bury-born" className="block text-xs font-medium text-bone">
+              <label htmlFor="bury-born" className="block text-xs font-medium text-ink">
                 Born Date *
               </label>
               <input
@@ -215,12 +218,12 @@ export function BuryModal({ onBuried }: BuryModalProps) {
                 type="date"
                 value={bornAt}
                 onChange={(e) => setBornAt(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-stone-border bg-crypt px-3 py-2 font-mono text-sm text-bone focus:border-necro focus:outline-none"
+                className={`${inputClass} font-mono`}
               />
             </div>
 
             <div>
-              <label htmlFor="bury-died" className="block text-xs font-medium text-bone">
+              <label htmlFor="bury-died" className="block text-xs font-medium text-ink">
                 Died Date *
               </label>
               <input
@@ -228,15 +231,15 @@ export function BuryModal({ onBuried }: BuryModalProps) {
                 type="date"
                 value={diedAt}
                 onChange={(e) => setDiedAt(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-stone-border bg-crypt px-3 py-2 font-mono text-sm text-bone focus:border-necro focus:outline-none"
+                className={`${inputClass} font-mono`}
               />
-              {errors.diedAt && <p className="mt-1 text-xs text-rust">{errors.diedAt}</p>}
+              {errors.diedAt && <p className="mt-1 text-xs text-marble-rust">{errors.diedAt}</p>}
             </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="bury-cause" className="block text-xs font-medium text-bone">
+              <label htmlFor="bury-cause" className="block text-xs font-medium text-ink">
                 Primary Cause of Death *
               </label>
               <select
@@ -247,7 +250,7 @@ export function BuryModal({ onBuried }: BuryModalProps) {
                   setPrimaryCause(next);
                   setSecondaryCauses((prev) => prev.filter((c) => c !== next));
                 }}
-                className="mt-1 w-full rounded-lg border border-stone-border bg-crypt px-3 py-2 text-sm text-bone focus:border-necro focus:outline-none"
+                className={inputClass}
               >
                 {Object.entries(CAUSE_LABELS).map(([k, label]) => (
                   <option key={k} value={k}>
@@ -258,14 +261,14 @@ export function BuryModal({ onBuried }: BuryModalProps) {
             </div>
 
             <div>
-              <label htmlFor="bury-validation" className="block text-xs font-medium text-bone">
+              <label htmlFor="bury-validation" className="block text-xs font-medium text-ink">
                 Validation Reached
               </label>
               <select
                 id="bury-validation"
                 value={validationLevel}
                 onChange={(e) => setValidationLevel(e.target.value as ValidationLevel)}
-                className="mt-1 w-full rounded-lg border border-stone-border bg-crypt px-3 py-2 text-sm text-bone focus:border-necro focus:outline-none"
+                className={inputClass}
               >
                 {Object.entries(VALIDATION_LABELS).map(([k, label]) => (
                   <option key={k} value={k}>
@@ -277,7 +280,7 @@ export function BuryModal({ onBuried }: BuryModalProps) {
           </div>
 
           <div>
-            <span className="block text-xs font-medium text-bone">
+            <span className="block text-xs font-medium text-ink">
               Secondary Causes (optional)
             </span>
             <div className="mt-1.5 flex flex-wrap gap-1.5">
@@ -290,10 +293,10 @@ export function BuryModal({ onBuried }: BuryModalProps) {
                       key={k}
                       type="button"
                       onClick={() => toggleSecondary(k as DeathCause)}
-                      className={`rounded-full border px-2.5 py-1 text-[11px] transition-colors ${
+                      className={`rounded-full border px-2.5 py-1 text-[11px] font-medium transition-colors ${
                         active
-                          ? 'border-necro bg-necro/15 text-necro'
-                          : 'border-stone-border bg-crypt text-stone hover:text-bone'
+                          ? 'border-azure bg-cloud-wash text-azure-deep'
+                          : 'border-hairline bg-alabaster text-slate-muted hover:text-ink'
                       }`}
                     >
                       {label}
@@ -305,10 +308,10 @@ export function BuryModal({ onBuried }: BuryModalProps) {
 
           <div>
             <div className="flex items-center justify-between">
-              <label htmlFor="bury-epitaph" className="block text-xs font-medium text-bone">
+              <label htmlFor="bury-epitaph" className="block text-xs font-medium text-ink">
                 Epitaph (engraved on the stone) *
               </label>
-              <span className={`font-mono text-[11px] ${epitaph.length > 140 ? 'text-rust' : 'text-stone'}`}>
+              <span className={`font-mono text-[11px] ${epitaph.length > 140 ? 'text-marble-rust' : 'text-slate-muted'}`}>
                 {epitaph.length}/140
               </span>
             </div>
@@ -319,13 +322,13 @@ export function BuryModal({ onBuried }: BuryModalProps) {
               value={epitaph}
               onChange={(e) => setEpitaph(e.target.value)}
               placeholder="Here lies a CRM for dog walkers. It never met a customer."
-              className="mt-1 w-full rounded-lg border border-stone-border bg-crypt px-3 py-2 font-display text-sm italic text-bone focus:border-necro focus:outline-none"
+              className={`${inputClass} font-display italic`}
             />
-            {errors.epitaph && <p className="mt-1 text-xs text-rust">{errors.epitaph}</p>}
+            {errors.epitaph && <p className="mt-1 text-xs text-marble-rust">{errors.epitaph}</p>}
           </div>
 
           <div>
-            <label htmlFor="bury-autopsy" className="block text-xs font-medium text-bone">
+            <label htmlFor="bury-autopsy" className="block text-xs font-medium text-ink">
               Autopsy (what did you learn?)
             </label>
             <textarea
@@ -334,12 +337,12 @@ export function BuryModal({ onBuried }: BuryModalProps) {
               value={autopsy}
               onChange={(e) => setAutopsy(e.target.value)}
               placeholder="Talk to 10 customers before buying the domain name."
-              className="mt-1 w-full rounded-lg border border-stone-border bg-crypt px-3 py-2 text-sm text-bone focus:border-necro focus:outline-none"
+              className={inputClass}
             />
           </div>
 
           <div>
-            <label htmlFor="bury-description" className="block text-xs font-medium text-bone">
+            <label htmlFor="bury-description" className="block text-xs font-medium text-ink">
               Description (optional)
             </label>
             <textarea
@@ -347,13 +350,13 @@ export function BuryModal({ onBuried }: BuryModalProps) {
               rows={2}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-stone-border bg-crypt px-3 py-2 text-sm text-bone focus:border-necro focus:outline-none"
+              className={inputClass}
             />
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="bury-money" className="block text-xs font-medium text-bone">
+              <label htmlFor="bury-money" className="block text-xs font-medium text-ink">
                 Money Lost (USD)
               </label>
               <input
@@ -363,13 +366,13 @@ export function BuryModal({ onBuried }: BuryModalProps) {
                 step="1"
                 value={moneyDollars}
                 onChange={(e) => setMoneyDollars(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-stone-border bg-crypt px-3 py-2 font-mono text-sm text-bone focus:border-necro focus:outline-none"
+                className={`${inputClass} font-mono`}
               />
-              {errors.moneyDollars && <p className="mt-1 text-xs text-rust">{errors.moneyDollars}</p>}
+              {errors.moneyDollars && <p className="mt-1 text-xs text-marble-rust">{errors.moneyDollars}</p>}
             </div>
 
             <div>
-              <label htmlFor="bury-hours" className="block text-xs font-medium text-bone">
+              <label htmlFor="bury-hours" className="block text-xs font-medium text-ink">
                 Hours Invested
               </label>
               <input
@@ -379,33 +382,33 @@ export function BuryModal({ onBuried }: BuryModalProps) {
                 step="1"
                 value={hoursInvested}
                 onChange={(e) => setHoursInvested(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-stone-border bg-crypt px-3 py-2 font-mono text-sm text-bone focus:border-necro focus:outline-none"
+                className={`${inputClass} font-mono`}
               />
-              {errors.hoursInvested && <p className="mt-1 text-xs text-rust">{errors.hoursInvested}</p>}
+              {errors.hoursInvested && <p className="mt-1 text-xs text-marble-rust">{errors.hoursInvested}</p>}
             </div>
           </div>
 
-          <label className="flex items-center gap-2.5 text-xs text-stone">
+          <label className="flex items-center gap-2.5 text-xs text-slate-muted">
             <input
               type="checkbox"
               checked={wouldResurrect}
               onChange={(e) => setWouldResurrect(e.target.checked)}
-              className="h-4 w-4 rounded border-stone-border bg-crypt text-necro focus:ring-necro"
+              className="h-4 w-4 rounded border-hairline text-azure focus:ring-azure"
             />
             <span>I would consider resurrecting this idea someday</span>
           </label>
 
-          <div className="flex justify-end gap-3 border-t border-stone-border/70 pt-4">
+          <div className="flex justify-end gap-3 border-t border-hairline pt-4">
             <button
               type="button"
               onClick={close}
-              className="rounded-lg border border-stone-border px-4 py-2 text-xs text-stone hover:text-bone"
+              className="rounded-xl border border-hairline px-4 py-2 text-xs font-medium text-slate-muted hover:text-ink"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-necro px-5 py-2 text-xs font-semibold text-crypt"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-azure px-5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-azure-deep"
             >
               <ShovelIcon className="h-3.5 w-3.5" aria-hidden="true" />
               <span>Bury Idea</span>
