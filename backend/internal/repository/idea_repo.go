@@ -272,3 +272,27 @@ func (r *IdeaRepository) UpdateStatus(ctx context.Context, userID, ideaID uuid.U
 	}
 	return updated, nil
 }
+
+func (r *IdeaRepository) ListAllByUser(ctx context.Context, userID uuid.UUID) ([]domain.Idea, error) {
+	q := fmt.Sprintf(`
+		SELECT %s
+		FROM ideas
+		WHERE user_id = $1 AND deleted_at IS NULL
+		ORDER BY died_at ASC, created_at ASC`, ideaColumns)
+
+	rows, err := r.db.Query(ctx, q, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	items := make([]domain.Idea, 0)
+	for rows.Next() {
+		idea, err := scanIdea(rows)
+		if err != nil {
+			return nil, err
+		}
+		items = append(items, *idea)
+	}
+	return items, rows.Err()
+}

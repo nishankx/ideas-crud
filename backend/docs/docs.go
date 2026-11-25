@@ -176,6 +176,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/demo/ideas": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "demo"
+                ],
+                "summary": "List public demo graveyard ideas",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.PaginatedIdeas"
+                        }
+                    }
+                }
+            }
+        },
+        "/demo/ideas/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "demo"
+                ],
+                "summary": "Get a single public demo idea",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Idea UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Idea"
+                        }
+                    }
+                }
+            }
+        },
         "/healthz": {
             "get": {
                 "produces": [
@@ -520,6 +567,150 @@ const docTemplate = `{
                 }
             }
         },
+        "/insights/causes": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "insights"
+                ],
+                "summary": "Get cause-of-death breakdown and co-occurring secondary causes",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.CausesResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/insights/lifespan": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "insights"
+                ],
+                "summary": "Get lifespan distribution buckets",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.LifespanResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/insights/patterns": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "insights"
+                ],
+                "summary": "Get server-side plain-English failure patterns",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.PatternsResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/insights/summary": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "insights"
+                ],
+                "summary": "Get aggregate graveyard summary stats",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.InsightsSummary"
+                        }
+                    }
+                }
+            }
+        },
+        "/insights/timeline": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "insights"
+                ],
+                "summary": "Get monthly burial counts",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.TimelineResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/insights/validation": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "insights"
+                ],
+                "summary": "Get validation level vs cause-of-death matrix",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ValidationResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/readyz": {
             "get": {
                 "produces": [
@@ -550,6 +741,51 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "domain.CauseBreakdownItem": {
+            "type": "object",
+            "properties": {
+                "cause": {
+                    "$ref": "#/definitions/domain.DeathCause"
+                },
+                "co_occurring": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.CoOccurringCause"
+                    }
+                },
+                "count": {
+                    "type": "integer"
+                },
+                "share": {
+                    "type": "number"
+                }
+            }
+        },
+        "domain.CausesResponse": {
+            "type": "object",
+            "properties": {
+                "causes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.CauseBreakdownItem"
+                    }
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.CoOccurringCause": {
+            "type": "object",
+            "properties": {
+                "cause": {
+                    "$ref": "#/definitions/domain.DeathCause"
+                },
+                "count": {
+                    "type": "integer"
+                }
+            }
+        },
         "domain.DeathCause": {
             "type": "string",
             "enum": [
@@ -684,6 +920,60 @@ const docTemplate = `{
                 "StatusResurrected"
             ]
         },
+        "domain.InsightsSummary": {
+            "type": "object",
+            "properties": {
+                "avg_lifespan_days": {
+                    "type": "number"
+                },
+                "most_common_cause": {
+                    "$ref": "#/definitions/domain.DeathCause"
+                },
+                "most_lethal_category": {
+                    "$ref": "#/definitions/domain.IdeaCategory"
+                },
+                "total_hours_lost": {
+                    "type": "integer"
+                },
+                "total_ideas": {
+                    "type": "integer"
+                },
+                "total_money_lost_cents": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.LifespanBucket": {
+            "type": "object",
+            "properties": {
+                "bucket": {
+                    "type": "string"
+                },
+                "count": {
+                    "type": "integer"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "share": {
+                    "type": "number"
+                }
+            }
+        },
+        "domain.LifespanResponse": {
+            "type": "object",
+            "properties": {
+                "buckets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.LifespanBucket"
+                    }
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
         "domain.PaginatedIdeas": {
             "type": "object",
             "properties": {
@@ -704,6 +994,60 @@ const docTemplate = `{
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "domain.PatternObservation": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "sample_size": {
+                    "type": "integer"
+                },
+                "severity": {
+                    "description": "info | warning | critical",
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.PatternsResponse": {
+            "type": "object",
+            "properties": {
+                "patterns": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.PatternObservation"
+                    }
+                }
+            }
+        },
+        "domain.TimelineBucket": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "month": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.TimelineResponse": {
+            "type": "object",
+            "properties": {
+                "buckets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.TimelineBucket"
+                    }
                 }
             }
         },
@@ -741,6 +1085,34 @@ const docTemplate = `{
                 "ValidationPrototype",
                 "ValidationPayingCustomers"
             ]
+        },
+        "domain.ValidationMatrixRow": {
+            "type": "object",
+            "properties": {
+                "causes": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer"
+                    }
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "validation_level": {
+                    "$ref": "#/definitions/domain.ValidationLevel"
+                }
+            }
+        },
+        "domain.ValidationResponse": {
+            "type": "object",
+            "properties": {
+                "matrix": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.ValidationMatrixRow"
+                    }
+                }
+            }
         },
         "handler.AuthResponse": {
             "type": "object",

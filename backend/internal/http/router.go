@@ -16,12 +16,14 @@ import (
 
 // RouterDeps holds all dependencies required to build the HTTP router.
 type RouterDeps struct {
-	Config      *config.Config
-	Logger      *slog.Logger
-	JWTManager  *auth.JWTManager
-	OpsHandler  *handler.OpsHandler
-	AuthHandler *handler.AuthHandler
-	IdeaHandler *handler.IdeaHandler
+	Config          *config.Config
+	Logger          *slog.Logger
+	JWTManager      *auth.JWTManager
+	OpsHandler      *handler.OpsHandler
+	AuthHandler     *handler.AuthHandler
+	IdeaHandler     *handler.IdeaHandler
+	InsightsHandler *handler.InsightsHandler
+	DemoHandler     *handler.DemoHandler
 }
 
 // NewRouter constructs the Gin engine with global middleware and registered routes.
@@ -70,6 +72,31 @@ func NewRouter(deps RouterDeps) *gin.Engine {
 		ideasGroup.PATCH("/:id", deps.IdeaHandler.Update)
 		ideasGroup.DELETE("/:id", deps.IdeaHandler.Delete)
 		ideasGroup.POST("/:id/resurrect", deps.IdeaHandler.Resurrect)
+	}
+
+	insightsGroup := v1.Group("/insights")
+	insightsGroup.Use(middleware.RequireAuth(deps.JWTManager))
+	{
+		insightsGroup.GET("/summary", deps.InsightsHandler.Summary)
+		insightsGroup.GET("/causes", deps.InsightsHandler.Causes)
+		insightsGroup.GET("/timeline", deps.InsightsHandler.Timeline)
+		insightsGroup.GET("/lifespan", deps.InsightsHandler.Lifespan)
+		insightsGroup.GET("/validation", deps.InsightsHandler.Validation)
+		insightsGroup.GET("/patterns", deps.InsightsHandler.Patterns)
+	}
+
+	demoLimiter := middleware.NewRateLimiter(deps.Config.RateLimitDemoPM)
+	demoGroup := v1.Group("/demo")
+	demoGroup.Use(demoLimiter.Middleware())
+	{
+		demoGroup.GET("/ideas", deps.DemoHandler.ListIdeas)
+		demoGroup.GET("/ideas/:id", deps.DemoHandler.GetIdea)
+		demoGroup.GET("/insights/summary", deps.DemoHandler.Summary)
+		demoGroup.GET("/insights/causes", deps.DemoHandler.Causes)
+		demoGroup.GET("/insights/timeline", deps.DemoHandler.Timeline)
+		demoGroup.GET("/insights/lifespan", deps.DemoHandler.Lifespan)
+		demoGroup.GET("/insights/validation", deps.DemoHandler.Validation)
+		demoGroup.GET("/insights/patterns", deps.DemoHandler.Patterns)
 	}
 
 	return r

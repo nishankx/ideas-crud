@@ -58,18 +58,23 @@ func main() {
 	jwtMgr := auth.NewJWTManager(cfg.JWTSecret, cfg.JWTAccessTTL)
 	authSvc := service.NewAuthService(pool, jwtMgr, cfg.JWTRefreshTTL, cfg.DBQueryTimeout)
 	ideaSvc := service.NewIdeaService(pool, cfg.DBQueryTimeout)
+	insightsSvc := service.NewInsightsService(pool, cfg.DBQueryTimeout)
 
 	opsHandler := handler.NewOpsHandler(pool, cfg.DBQueryTimeout)
 	authHandler := handler.NewAuthHandler(authSvc, cfg.JWTRefreshTTL, cfg.CookieSecure, cfg.CookieDomain)
 	ideaHandler := handler.NewIdeaHandler(ideaSvc)
+	insightsHandler := handler.NewInsightsHandler(insightsSvc)
+	demoHandler := handler.NewDemoHandler(pool, ideaSvc, insightsSvc, cfg.DBQueryTimeout)
 
 	router := apphttp.NewRouter(apphttp.RouterDeps{
-		Config:      cfg,
-		Logger:      logger,
-		JWTManager:  jwtMgr,
-		OpsHandler:  opsHandler,
-		AuthHandler: authHandler,
-		IdeaHandler: ideaHandler,
+		Config:          cfg,
+		Logger:          logger,
+		JWTManager:      jwtMgr,
+		OpsHandler:      opsHandler,
+		AuthHandler:     authHandler,
+		IdeaHandler:     ideaHandler,
+		InsightsHandler: insightsHandler,
+		DemoHandler:     demoHandler,
 	})
 
 	srv := &http.Server{

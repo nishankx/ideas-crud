@@ -1,5 +1,34 @@
 basePath: /api/v1
 definitions:
+  domain.CauseBreakdownItem:
+    properties:
+      cause:
+        $ref: '#/definitions/domain.DeathCause'
+      co_occurring:
+        items:
+          $ref: '#/definitions/domain.CoOccurringCause'
+        type: array
+      count:
+        type: integer
+      share:
+        type: number
+    type: object
+  domain.CausesResponse:
+    properties:
+      causes:
+        items:
+          $ref: '#/definitions/domain.CauseBreakdownItem'
+        type: array
+      total:
+        type: integer
+    type: object
+  domain.CoOccurringCause:
+    properties:
+      cause:
+        $ref: '#/definitions/domain.DeathCause'
+      count:
+        type: integer
+    type: object
   domain.DeathCause:
     enum:
     - no_market_need
@@ -103,6 +132,41 @@ definitions:
     - StatusBuried
     - StatusOnLifeSupport
     - StatusResurrected
+  domain.InsightsSummary:
+    properties:
+      avg_lifespan_days:
+        type: number
+      most_common_cause:
+        $ref: '#/definitions/domain.DeathCause'
+      most_lethal_category:
+        $ref: '#/definitions/domain.IdeaCategory'
+      total_hours_lost:
+        type: integer
+      total_ideas:
+        type: integer
+      total_money_lost_cents:
+        type: integer
+    type: object
+  domain.LifespanBucket:
+    properties:
+      bucket:
+        type: string
+      count:
+        type: integer
+      label:
+        type: string
+      share:
+        type: number
+    type: object
+  domain.LifespanResponse:
+    properties:
+      buckets:
+        items:
+          $ref: '#/definitions/domain.LifespanBucket'
+        type: array
+      total:
+        type: integer
+    type: object
   domain.PaginatedIdeas:
     properties:
       has_more:
@@ -117,6 +181,41 @@ definitions:
         type: integer
       total:
         type: integer
+    type: object
+  domain.PatternObservation:
+    properties:
+      id:
+        type: string
+      message:
+        type: string
+      sample_size:
+        type: integer
+      severity:
+        description: info | warning | critical
+        type: string
+      title:
+        type: string
+    type: object
+  domain.PatternsResponse:
+    properties:
+      patterns:
+        items:
+          $ref: '#/definitions/domain.PatternObservation'
+        type: array
+    type: object
+  domain.TimelineBucket:
+    properties:
+      count:
+        type: integer
+      month:
+        type: string
+    type: object
+  domain.TimelineResponse:
+    properties:
+      buckets:
+        items:
+          $ref: '#/definitions/domain.TimelineBucket'
+        type: array
     type: object
   domain.User:
     properties:
@@ -143,6 +242,24 @@ definitions:
     - ValidationTalkedToUsers
     - ValidationPrototype
     - ValidationPayingCustomers
+  domain.ValidationMatrixRow:
+    properties:
+      causes:
+        additionalProperties:
+          type: integer
+        type: object
+      total:
+        type: integer
+      validation_level:
+        $ref: '#/definitions/domain.ValidationLevel'
+    type: object
+  domain.ValidationResponse:
+    properties:
+      matrix:
+        items:
+          $ref: '#/definitions/domain.ValidationMatrixRow'
+        type: array
+    type: object
   handler.AuthResponse:
     properties:
       access_token:
@@ -395,6 +512,36 @@ paths:
       summary: Register a new account
       tags:
       - auth
+  /demo/ideas:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.PaginatedIdeas'
+      summary: List public demo graveyard ideas
+      tags:
+      - demo
+  /demo/ideas/{id}:
+    get:
+      parameters:
+      - description: Idea UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Idea'
+      summary: Get a single public demo idea
+      tags:
+      - demo
   /healthz:
     get:
       produces:
@@ -612,6 +759,90 @@ paths:
       summary: Advance idea status (buried -> on_life_support -> resurrected)
       tags:
       - ideas
+  /insights/causes:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.CausesResponse'
+      security:
+      - BearerAuth: []
+      summary: Get cause-of-death breakdown and co-occurring secondary causes
+      tags:
+      - insights
+  /insights/lifespan:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.LifespanResponse'
+      security:
+      - BearerAuth: []
+      summary: Get lifespan distribution buckets
+      tags:
+      - insights
+  /insights/patterns:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.PatternsResponse'
+      security:
+      - BearerAuth: []
+      summary: Get server-side plain-English failure patterns
+      tags:
+      - insights
+  /insights/summary:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.InsightsSummary'
+      security:
+      - BearerAuth: []
+      summary: Get aggregate graveyard summary stats
+      tags:
+      - insights
+  /insights/timeline:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.TimelineResponse'
+      security:
+      - BearerAuth: []
+      summary: Get monthly burial counts
+      tags:
+      - insights
+  /insights/validation:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.ValidationResponse'
+      security:
+      - BearerAuth: []
+      summary: Get validation level vs cause-of-death matrix
+      tags:
+      - insights
   /readyz:
     get:
       produces:
