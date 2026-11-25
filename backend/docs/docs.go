@@ -198,6 +198,328 @@ const docTemplate = `{
                 }
             }
         },
+        "/ideas": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ideas"
+                ],
+                "summary": "List buried ideas with filters, full-text search, and pagination",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Primary cause filter",
+                        "name": "cause",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Category filter",
+                        "name": "category",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Status filter",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Validation level filter",
+                        "name": "validation",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Died after YYYY-MM-DD",
+                        "name": "from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Died before YYYY-MM-DD",
+                        "name": "to",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Full-text search query",
+                        "name": "q",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort field (died_at, created_at, money_spent, lifespan)",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort direction (asc, desc)",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.PaginatedIdeas"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorEnvelope"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ideas"
+                ],
+                "summary": "Bury a new startup idea",
+                "parameters": [
+                    {
+                        "description": "Idea payload",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.CreateIdeaRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Idea"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorEnvelope"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorEnvelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/ideas/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ideas"
+                ],
+                "summary": "Get a single buried idea by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Idea UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Idea"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorEnvelope"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "tags": [
+                    "ideas"
+                ],
+                "summary": "Soft-delete a buried idea",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Idea UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorEnvelope"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ideas"
+                ],
+                "summary": "Update a buried idea",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Idea UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Fields to update",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.UpdateIdeaRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Idea"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorEnvelope"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorEnvelope"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorEnvelope"
+                        }
+                    }
+                }
+            }
+        },
+        "/ideas/{id}/resurrect": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ideas"
+                ],
+                "summary": "Advance idea status (buried -\u003e on_life_support -\u003e resurrected)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Idea UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Idea"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorEnvelope"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorEnvelope"
+                        }
+                    }
+                }
+            }
+        },
         "/readyz": {
             "get": {
                 "produces": [
@@ -228,6 +550,163 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "domain.DeathCause": {
+            "type": "string",
+            "enum": [
+                "no_market_need",
+                "ran_out_of_money",
+                "ran_out_of_time",
+                "lost_motivation",
+                "competitor",
+                "technical_difficulty",
+                "cofounder_conflict",
+                "legal_regulatory",
+                "bad_timing",
+                "pivoted_away",
+                "other"
+            ],
+            "x-enum-varnames": [
+                "CauseNoMarketNeed",
+                "CauseRanOutOfMoney",
+                "CauseRanOutOfTime",
+                "CauseLostMotivation",
+                "CauseCompetitor",
+                "CauseTechnicalDifficulty",
+                "CauseCofounderConflict",
+                "CauseLegalRegulatory",
+                "CauseBadTiming",
+                "CausePivotedAway",
+                "CauseOther"
+            ]
+        },
+        "domain.Idea": {
+            "type": "object",
+            "properties": {
+                "autopsy": {
+                    "type": "string"
+                },
+                "born_at": {
+                    "type": "string"
+                },
+                "category": {
+                    "$ref": "#/definitions/domain.IdeaCategory"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "died_at": {
+                    "type": "string"
+                },
+                "epitaph": {
+                    "type": "string"
+                },
+                "hours_invested": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "money_spent_cents": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "primary_cause": {
+                    "$ref": "#/definitions/domain.DeathCause"
+                },
+                "secondary_causes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.DeathCause"
+                    }
+                },
+                "status": {
+                    "$ref": "#/definitions/domain.IdeaStatus"
+                },
+                "tagline": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                },
+                "validation_level": {
+                    "$ref": "#/definitions/domain.ValidationLevel"
+                },
+                "would_resurrect": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "domain.IdeaCategory": {
+            "type": "string",
+            "enum": [
+                "saas",
+                "marketplace",
+                "consumer",
+                "devtool",
+                "hardware",
+                "fintech",
+                "health",
+                "education",
+                "social",
+                "other"
+            ],
+            "x-enum-varnames": [
+                "CategorySaaS",
+                "CategoryMarketplace",
+                "CategoryConsumer",
+                "CategoryDevtool",
+                "CategoryHardware",
+                "CategoryFintech",
+                "CategoryHealth",
+                "CategoryEducation",
+                "CategorySocial",
+                "CategoryOther"
+            ]
+        },
+        "domain.IdeaStatus": {
+            "type": "string",
+            "enum": [
+                "buried",
+                "on_life_support",
+                "resurrected"
+            ],
+            "x-enum-varnames": [
+                "StatusBuried",
+                "StatusOnLifeSupport",
+                "StatusResurrected"
+            ]
+        },
+        "domain.PaginatedIdeas": {
+            "type": "object",
+            "properties": {
+                "has_more": {
+                    "type": "boolean"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Idea"
+                    }
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
         "domain.User": {
             "type": "object",
             "properties": {
@@ -248,6 +727,21 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.ValidationLevel": {
+            "type": "string",
+            "enum": [
+                "none",
+                "talked_to_users",
+                "prototype",
+                "paying_customers"
+            ],
+            "x-enum-varnames": [
+                "ValidationNone",
+                "ValidationTalkedToUsers",
+                "ValidationPrototype",
+                "ValidationPayingCustomers"
+            ]
+        },
         "handler.AuthResponse": {
             "type": "object",
             "properties": {
@@ -256,6 +750,73 @@ const docTemplate = `{
                 },
                 "user": {
                     "$ref": "#/definitions/domain.User"
+                }
+            }
+        },
+        "handler.CreateIdeaRequest": {
+            "type": "object",
+            "required": [
+                "born_at",
+                "category",
+                "died_at",
+                "epitaph",
+                "name",
+                "primary_cause"
+            ],
+            "properties": {
+                "autopsy": {
+                    "type": "string",
+                    "maxLength": 5000
+                },
+                "born_at": {
+                    "type": "string"
+                },
+                "category": {
+                    "$ref": "#/definitions/domain.IdeaCategory"
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 5000
+                },
+                "died_at": {
+                    "type": "string"
+                },
+                "epitaph": {
+                    "type": "string",
+                    "maxLength": 140,
+                    "minLength": 1
+                },
+                "hours_invested": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "money_spent_cents": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 120,
+                    "minLength": 1
+                },
+                "primary_cause": {
+                    "$ref": "#/definitions/domain.DeathCause"
+                },
+                "secondary_causes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.DeathCause"
+                    }
+                },
+                "tagline": {
+                    "type": "string",
+                    "maxLength": 200
+                },
+                "validation_level": {
+                    "$ref": "#/definitions/domain.ValidationLevel"
+                },
+                "would_resurrect": {
+                    "type": "boolean"
                 }
             }
         },
@@ -320,6 +881,68 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 128,
                     "minLength": 8
+                }
+            }
+        },
+        "handler.UpdateIdeaRequest": {
+            "type": "object",
+            "properties": {
+                "autopsy": {
+                    "type": "string",
+                    "maxLength": 5000
+                },
+                "born_at": {
+                    "type": "string"
+                },
+                "category": {
+                    "$ref": "#/definitions/domain.IdeaCategory"
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 5000
+                },
+                "died_at": {
+                    "type": "string"
+                },
+                "epitaph": {
+                    "type": "string",
+                    "maxLength": 140,
+                    "minLength": 1
+                },
+                "hours_invested": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "money_spent_cents": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 120,
+                    "minLength": 1
+                },
+                "primary_cause": {
+                    "$ref": "#/definitions/domain.DeathCause"
+                },
+                "secondary_causes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.DeathCause"
+                    }
+                },
+                "status": {
+                    "$ref": "#/definitions/domain.IdeaStatus"
+                },
+                "tagline": {
+                    "type": "string",
+                    "maxLength": 200
+                },
+                "validation_level": {
+                    "$ref": "#/definitions/domain.ValidationLevel"
+                },
+                "would_resurrect": {
+                    "type": "boolean"
                 }
             }
         }

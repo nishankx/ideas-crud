@@ -1,5 +1,123 @@
 basePath: /api/v1
 definitions:
+  domain.DeathCause:
+    enum:
+    - no_market_need
+    - ran_out_of_money
+    - ran_out_of_time
+    - lost_motivation
+    - competitor
+    - technical_difficulty
+    - cofounder_conflict
+    - legal_regulatory
+    - bad_timing
+    - pivoted_away
+    - other
+    type: string
+    x-enum-varnames:
+    - CauseNoMarketNeed
+    - CauseRanOutOfMoney
+    - CauseRanOutOfTime
+    - CauseLostMotivation
+    - CauseCompetitor
+    - CauseTechnicalDifficulty
+    - CauseCofounderConflict
+    - CauseLegalRegulatory
+    - CauseBadTiming
+    - CausePivotedAway
+    - CauseOther
+  domain.Idea:
+    properties:
+      autopsy:
+        type: string
+      born_at:
+        type: string
+      category:
+        $ref: '#/definitions/domain.IdeaCategory'
+      created_at:
+        type: string
+      description:
+        type: string
+      died_at:
+        type: string
+      epitaph:
+        type: string
+      hours_invested:
+        type: integer
+      id:
+        type: string
+      money_spent_cents:
+        type: integer
+      name:
+        type: string
+      primary_cause:
+        $ref: '#/definitions/domain.DeathCause'
+      secondary_causes:
+        items:
+          $ref: '#/definitions/domain.DeathCause'
+        type: array
+      status:
+        $ref: '#/definitions/domain.IdeaStatus'
+      tagline:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+      validation_level:
+        $ref: '#/definitions/domain.ValidationLevel'
+      would_resurrect:
+        type: boolean
+    type: object
+  domain.IdeaCategory:
+    enum:
+    - saas
+    - marketplace
+    - consumer
+    - devtool
+    - hardware
+    - fintech
+    - health
+    - education
+    - social
+    - other
+    type: string
+    x-enum-varnames:
+    - CategorySaaS
+    - CategoryMarketplace
+    - CategoryConsumer
+    - CategoryDevtool
+    - CategoryHardware
+    - CategoryFintech
+    - CategoryHealth
+    - CategoryEducation
+    - CategorySocial
+    - CategoryOther
+  domain.IdeaStatus:
+    enum:
+    - buried
+    - on_life_support
+    - resurrected
+    type: string
+    x-enum-varnames:
+    - StatusBuried
+    - StatusOnLifeSupport
+    - StatusResurrected
+  domain.PaginatedIdeas:
+    properties:
+      has_more:
+        type: boolean
+      items:
+        items:
+          $ref: '#/definitions/domain.Idea'
+        type: array
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+    type: object
   domain.User:
     properties:
       created_at:
@@ -13,12 +131,73 @@ definitions:
       is_demo:
         type: boolean
     type: object
+  domain.ValidationLevel:
+    enum:
+    - none
+    - talked_to_users
+    - prototype
+    - paying_customers
+    type: string
+    x-enum-varnames:
+    - ValidationNone
+    - ValidationTalkedToUsers
+    - ValidationPrototype
+    - ValidationPayingCustomers
   handler.AuthResponse:
     properties:
       access_token:
         type: string
       user:
         $ref: '#/definitions/domain.User'
+    type: object
+  handler.CreateIdeaRequest:
+    properties:
+      autopsy:
+        maxLength: 5000
+        type: string
+      born_at:
+        type: string
+      category:
+        $ref: '#/definitions/domain.IdeaCategory'
+      description:
+        maxLength: 5000
+        type: string
+      died_at:
+        type: string
+      epitaph:
+        maxLength: 140
+        minLength: 1
+        type: string
+      hours_invested:
+        minimum: 0
+        type: integer
+      money_spent_cents:
+        minimum: 0
+        type: integer
+      name:
+        maxLength: 120
+        minLength: 1
+        type: string
+      primary_cause:
+        $ref: '#/definitions/domain.DeathCause'
+      secondary_causes:
+        items:
+          $ref: '#/definitions/domain.DeathCause'
+        type: array
+      tagline:
+        maxLength: 200
+        type: string
+      validation_level:
+        $ref: '#/definitions/domain.ValidationLevel'
+      would_resurrect:
+        type: boolean
+    required:
+    - born_at
+    - category
+    - died_at
+    - epitaph
+    - name
+    - primary_cause
     type: object
   handler.ErrorBody:
     properties:
@@ -63,6 +242,50 @@ definitions:
     - display_name
     - email
     - password
+    type: object
+  handler.UpdateIdeaRequest:
+    properties:
+      autopsy:
+        maxLength: 5000
+        type: string
+      born_at:
+        type: string
+      category:
+        $ref: '#/definitions/domain.IdeaCategory'
+      description:
+        maxLength: 5000
+        type: string
+      died_at:
+        type: string
+      epitaph:
+        maxLength: 140
+        minLength: 1
+        type: string
+      hours_invested:
+        minimum: 0
+        type: integer
+      money_spent_cents:
+        minimum: 0
+        type: integer
+      name:
+        maxLength: 120
+        minLength: 1
+        type: string
+      primary_cause:
+        $ref: '#/definitions/domain.DeathCause'
+      secondary_causes:
+        items:
+          $ref: '#/definitions/domain.DeathCause'
+        type: array
+      status:
+        $ref: '#/definitions/domain.IdeaStatus'
+      tagline:
+        maxLength: 200
+        type: string
+      validation_level:
+        $ref: '#/definitions/domain.ValidationLevel'
+      would_resurrect:
+        type: boolean
     type: object
 info:
   contact: {}
@@ -186,6 +409,209 @@ paths:
       summary: Liveness probe
       tags:
       - ops
+  /ideas:
+    get:
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: limit
+        type: integer
+      - description: Primary cause filter
+        in: query
+        name: cause
+        type: string
+      - description: Category filter
+        in: query
+        name: category
+        type: string
+      - description: Status filter
+        in: query
+        name: status
+        type: string
+      - description: Validation level filter
+        in: query
+        name: validation
+        type: string
+      - description: Died after YYYY-MM-DD
+        in: query
+        name: from
+        type: string
+      - description: Died before YYYY-MM-DD
+        in: query
+        name: to
+        type: string
+      - description: Full-text search query
+        in: query
+        name: q
+        type: string
+      - description: Sort field (died_at, created_at, money_spent, lifespan)
+        in: query
+        name: sort
+        type: string
+      - description: Sort direction (asc, desc)
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.PaginatedIdeas'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorEnvelope'
+      security:
+      - BearerAuth: []
+      summary: List buried ideas with filters, full-text search, and pagination
+      tags:
+      - ideas
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Idea payload
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.CreateIdeaRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Idea'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorEnvelope'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorEnvelope'
+      security:
+      - BearerAuth: []
+      summary: Bury a new startup idea
+      tags:
+      - ideas
+  /ideas/{id}:
+    delete:
+      parameters:
+      - description: Idea UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorEnvelope'
+      security:
+      - BearerAuth: []
+      summary: Soft-delete a buried idea
+      tags:
+      - ideas
+    get:
+      parameters:
+      - description: Idea UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Idea'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorEnvelope'
+      security:
+      - BearerAuth: []
+      summary: Get a single buried idea by ID
+      tags:
+      - ideas
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Idea UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Fields to update
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.UpdateIdeaRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Idea'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorEnvelope'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorEnvelope'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handler.ErrorEnvelope'
+      security:
+      - BearerAuth: []
+      summary: Update a buried idea
+      tags:
+      - ideas
+  /ideas/{id}/resurrect:
+    post:
+      parameters:
+      - description: Idea UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Idea'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorEnvelope'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handler.ErrorEnvelope'
+      security:
+      - BearerAuth: []
+      summary: Advance idea status (buried -> on_life_support -> resurrected)
+      tags:
+      - ideas
   /readyz:
     get:
       produces:

@@ -21,6 +21,7 @@ type RouterDeps struct {
 	JWTManager  *auth.JWTManager
 	OpsHandler  *handler.OpsHandler
 	AuthHandler *handler.AuthHandler
+	IdeaHandler *handler.IdeaHandler
 }
 
 // NewRouter constructs the Gin engine with global middleware and registered routes.
@@ -58,6 +59,17 @@ func NewRouter(deps RouterDeps) *gin.Engine {
 		authGroup.POST("/refresh", deps.AuthHandler.Refresh)
 		authGroup.POST("/logout", deps.AuthHandler.Logout)
 		authGroup.GET("/me", middleware.RequireAuth(deps.JWTManager), deps.AuthHandler.Me)
+	}
+
+	ideasGroup := v1.Group("/ideas")
+	ideasGroup.Use(middleware.RequireAuth(deps.JWTManager))
+	{
+		ideasGroup.POST("", deps.IdeaHandler.Create)
+		ideasGroup.GET("", deps.IdeaHandler.List)
+		ideasGroup.GET("/:id", deps.IdeaHandler.Get)
+		ideasGroup.PATCH("/:id", deps.IdeaHandler.Update)
+		ideasGroup.DELETE("/:id", deps.IdeaHandler.Delete)
+		ideasGroup.POST("/:id/resurrect", deps.IdeaHandler.Resurrect)
 	}
 
 	return r

@@ -57,9 +57,11 @@ func main() {
 
 	jwtMgr := auth.NewJWTManager(cfg.JWTSecret, cfg.JWTAccessTTL)
 	authSvc := service.NewAuthService(pool, jwtMgr, cfg.JWTRefreshTTL, cfg.DBQueryTimeout)
+	ideaSvc := service.NewIdeaService(pool, cfg.DBQueryTimeout)
 
 	opsHandler := handler.NewOpsHandler(pool, cfg.DBQueryTimeout)
 	authHandler := handler.NewAuthHandler(authSvc, cfg.JWTRefreshTTL, cfg.CookieSecure, cfg.CookieDomain)
+	ideaHandler := handler.NewIdeaHandler(ideaSvc)
 
 	router := apphttp.NewRouter(apphttp.RouterDeps{
 		Config:      cfg,
@@ -67,6 +69,7 @@ func main() {
 		JWTManager:  jwtMgr,
 		OpsHandler:  opsHandler,
 		AuthHandler: authHandler,
+		IdeaHandler: ideaHandler,
 	})
 
 	srv := &http.Server{
