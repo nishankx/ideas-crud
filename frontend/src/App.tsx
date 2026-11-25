@@ -1,17 +1,24 @@
-import { MotionConfig } from 'framer-motion';
-import { useState } from 'react';
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { AnimatePresence, MotionConfig } from 'framer-motion';
+import { useCallback, useState } from 'react';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { useFetch } from './hooks/useFetch';
+import { AuthModal } from './routes/AuthModal';
+import { BuryModal } from './routes/BuryModal';
+import { IdeaDetailModal } from './routes/IdeaDetailModal';
+import { AutopsySection } from './sections/AutopsySection';
 import { FooterSection } from './sections/FooterSection';
 import { GraveyardSection } from './sections/GraveyardSection';
 import { HeroSection } from './sections/HeroSection';
 import type { InsightsSummary } from './types/api';
 
-function GraveyardPage() {
+function GraveyardShell() {
   const { isAuthenticated } = useAuth();
-  const [refreshNonce] = useState(0);
+  const location = useLocation();
+  const [refreshNonce, setRefreshNonce] = useState(0);
+
+  const bumpRefresh = useCallback(() => setRefreshNonce((n) => n + 1), []);
 
   const summaryPath = isAuthenticated
     ? `/insights/summary?r=${refreshNonce}`
@@ -24,14 +31,20 @@ function GraveyardPage() {
       <main>
         <HeroSection summary={summary} />
         <GraveyardSection refreshNonce={refreshNonce} />
-        <section id="autopsy" className="mx-auto max-w-6xl border-t border-stone-border/60 px-4 py-16 sm:px-6">
-          <h2 className="font-display text-3xl font-bold text-bone">Autopsy Report</h2>
-          <p className="mt-2 text-sm text-stone">
-            Detailed failure analytics &amp; pattern detection arriving in the next phase.
-          </p>
-        </section>
+        <AutopsySection refreshNonce={refreshNonce} summary={summary} />
       </main>
       <FooterSection />
+
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={null} />
+          <Route path="/login" element={<AuthModal mode="login" />} />
+          <Route path="/register" element={<AuthModal mode="register" />} />
+          <Route path="/bury" element={<BuryModal onBuried={bumpRefresh} />} />
+          <Route path="/idea/:id" element={<IdeaDetailModal onMutated={bumpRefresh} />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AnimatePresence>
     </div>
   );
 }
@@ -41,14 +54,7 @@ export function App() {
     <MotionConfig reducedMotion="user">
       <AuthProvider>
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<GraveyardPage />} />
-            <Route path="/login" element={<GraveyardPage />} />
-            <Route path="/register" element={<GraveyardPage />} />
-            <Route path="/bury" element={<GraveyardPage />} />
-            <Route path="/idea/:id" element={<GraveyardPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <GraveyardShell />
         </BrowserRouter>
       </AuthProvider>
     </MotionConfig>
