@@ -11,9 +11,12 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
+	_ "github.com/nisha/gravehard/docs"
+	"github.com/nisha/gravehard/internal/auth"
 	"github.com/nisha/gravehard/internal/config"
 	apphttp "github.com/nisha/gravehard/internal/http"
 	"github.com/nisha/gravehard/internal/http/handler"
+	"github.com/nisha/gravehard/internal/service"
 )
 
 // @title Startup Idea Graveyard API
@@ -52,11 +55,18 @@ func main() {
 	}
 	defer pool.Close()
 
+	jwtMgr := auth.NewJWTManager(cfg.JWTSecret, cfg.JWTAccessTTL)
+	authSvc := service.NewAuthService(pool, jwtMgr, cfg.JWTRefreshTTL, cfg.DBQueryTimeout)
+
 	opsHandler := handler.NewOpsHandler(pool, cfg.DBQueryTimeout)
+	authHandler := handler.NewAuthHandler(authSvc, cfg.JWTRefreshTTL, cfg.CookieSecure, cfg.CookieDomain)
+
 	router := apphttp.NewRouter(apphttp.RouterDeps{
-		Config:     cfg,
-		Logger:     logger,
-		OpsHandler: opsHandler,
+		Config:      cfg,
+		Logger:      logger,
+		JWTManager:  jwtMgr,
+		OpsHandler:  opsHandler,
+		AuthHandler: authHandler,
 	})
 
 	srv := &http.Server{
