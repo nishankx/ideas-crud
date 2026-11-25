@@ -315,17 +315,15 @@ function TimelineSVG({ buckets }: { buckets: { month: string; count: number }[] 
         <line x1={padX} y1={height - padY} x2={width - padX} y2={height - padY} stroke="#272C37" strokeWidth="1" />
         <motion.path
           d={pathD}
+          pathLength={1}
+          strokeDasharray="1"
           fill="none"
           stroke="#7CEB4F"
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          variants={{
-            hidden: { pathLength: 0, opacity: 0.2 },
-            visible: { pathLength: 1, opacity: 1 },
-          }}
-          initial={shouldReduce ? 'visible' : 'hidden'}
-          whileInView="visible"
+          initial={shouldReduce ? false : { strokeDashoffset: 1 }}
+          whileInView={{ strokeDashoffset: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.9, ease: 'easeInOut' }}
         />
