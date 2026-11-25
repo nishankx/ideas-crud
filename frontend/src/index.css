@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: theme('fontFamily.sans');
+    background-color: theme('colors.crypt');
+    color: theme('colors.bone');
+  }
+
+  *:focus-visible {
+    outline: 2px solid theme('colors.necro');
+    outline-offset: 2px;
+  }
+}
+
+/* Subtle film grain / crypt stone texture */
+.crypt-grain {
+  background-image: radial-gradient(rgba(234, 230, 223, 0.04) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+/* Drifting fog animation */
+@keyframes fogDrift {
+  0% {
+    transform: translateX(-8%) translateY(0);
+  }
+  50% {
+    transform: translateX(8%) translateY(-6px);
+  }
+  100% {
+    transform: translateX(-8%) translateY(0);
+  }
+}
+
+@keyframes moonFlicker {
+  0%, 100% {
+    opacity: 0.9;
+    filter: drop-shadow(0 0 22px rgba(124, 235, 79, 0.22));
+  }
+  48% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 0.65;
+    filter: drop-shadow(0 0 10px rgba(124, 235, 79, 0.1));
+  }
+  52% {
+    opacity: 0.92;
+  }
+}
+
+.animate-fog-slow {
+  animation: fogDrift 26s ease-in-out infinite;
+}
+
+.animate-moon-flicker {
+  animation: moonFlicker 9s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fog-slow,
+  .animate-moon-flicker {
+    animation: none !important;
+  }
+}
